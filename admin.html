@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="bn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090d18"><title>PlayNest Admin</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090d18;color:#f6f7fb;font-family:system-ui,sans-serif}.wrap{max-width:1000px;margin:auto;padding:28px 20px}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.brand{font-size:23px;font-weight:850}.brand span{display:inline-grid;place-items:center;background:linear-gradient(135deg,#875cf6,#22d3ee);width:36px;height:36px;border-radius:12px;margin-right:8px}.link{color:#c4b5fd;text-decoration:none}.panel{margin-top:25px;background:#121a2a;border:1px solid #ffffff18;border-radius:18px;padding:23px}.muted{color:#9ba8bd;font-size:13px;line-height:1.6}label{display:block;margin:15px 0 7px;color:#cbd5e1;font-size:14px}input{width:100%;padding:12px;border:1px solid #ffffff20;background:#0c1321;color:white;border-radius:10px}button{background:#8059ed;color:white;border:0;border-radius:10px;padding:12px 17px;font-weight:700;cursor:pointer;margin-top:15px}.row{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.video-item { background: #0c1321; padding: 12px; border-radius: 10px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+.del-btn { background: #ef4444; padding: 6px 12px; font-size: 12px; margin: 0; }
+@media(max-width:600px){.row{grid-template-columns:1fr}}
+</style></head><body>
+<div class="wrap"><div class="top"><div class="brand"><span>▶</span>PlayNest Admin</div><a class="link" href="index.html">← Public Website</a></div>
+<section class="panel"><h1>ভিডিও ম্যানেজমেন্ট</h1><p class="muted">এখান থেকে নতুন ভিডিও যোগ করলে তা সরাসরি আপনার ডাটাবেজে সেভ হবে।</p>
+<div class="row"><div><label for="title">ভিডিওর নাম</label><input id="title" placeholder="ভিডিওর শিরোনাম"></div><div><label for="category">ক্যাটাগরি</label><input id="category" placeholder="ক্যাটাগরির নাম লিখুন (যেমন: Action, Song)"></div></div>
+
+<label for="thumb">Thumbnail ছবির লিংক (Image URL)</label><input id="thumb" type="url" placeholder="https://example.com/image.jpg">
+<label for="videoUrl">ভিডিও লিংক (YouTube বা MP4 Link)</label><input id="videoUrl" type="url" placeholder="https://youtu.be/...">
+<label for="duration">সময়কাল (যেমন: 12:45)</label><input id="duration" type="text" placeholder="12:45">
+
+<button type="button" onclick="uploadVideo()">ভিডিও পাবলিশ করুন</button>
+<div id="status" style="margin-top: 15px; color: #4ade80; font-size: 14px;"></div>
+
+<div style="margin-top: 30px;">
+    <h3>পাবলিশ করা ভিডিওসমূহ</h3>
+    <div id="videoList">লোড হচ্ছে...</div>
+</div>
+</section></div>
+
+<script>
+    // আপনার ফায়ারবেস ডাটাবেজ লিংকটি নিচে বসান (শেষে '/' রাখবেন না)
+    const DB_URL = "https://playnest-f4c56-default-rtdb.firebaseio.com"; 
+
+    async function uploadVideo() {
+        const title = document.getElementById('title').value.trim();
+        const category = document.getElementById('category').value.trim() || "General";
+        const thumb = document.getElementById('thumb').value.trim();
+        const videoUrl = document.getElementById('videoUrl').value.trim();
+        const duration = document.getElementById('duration').value.trim() || "05:00";
+
+        if(!title || !thumb || !videoUrl) {
+            alert("দয়া করে শিরোনাম, থাম্বনেইল লিংক এবং ভিডিও লিংক পূরণ করুন!");
+            return;
+        }
+
+        const videoData = { title, category, thumb, videoUrl, duration, time: Date.now() };
+        document.getElementById('status').innerText = "আপলোড হচ্ছে...";
+
+        try {
+            let res = await fetch(`${DB_URL}/videos.json`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(videoData)
+            });
+            if(res.ok) {
+                document.getElementById('status').innerText = "সফলভাবে পাবলিশ হয়েছে!";
+                document.getElementById('title').value = "";
+                document.getElementById('category').value = "";
+                document.getElementById('thumb').value = "";
+                document.getElementById('videoUrl').value = "";
+                document.getElementById('duration').value = "";
+                loadAdminVideos();
+            } else {
+                document.getElementById('status').innerText = "আপলোড ব্যর্থ হয়েছে!";
+            }
+        } catch(e) {
+            document.getElementById('status').innerText = "নেটওয়ার্ক ত্রুটি!";
+        }
+    }
+
+    async function loadAdminVideos() {
+        const list = document.getElementById('videoList');
+        try {
+            let res = await fetch(`${DB_URL}/videos.json`);
+            let data = await res.json();
+            list.innerHTML = "";
+            if(!data) {
+                list.innerHTML = "<p class='muted'>কোনো ভিডিও নেই।</p>";
+                return;
+            }
+            Object.keys(data).reverse().forEach(key => {
+                let v = data[key];
+                let div = document.createElement('div');
+                div.className = 'video-item';
+                div.innerHTML = `<span><b>${v.title}</b> (${v.category})</span> <button class="del-btn" onclick="deleteVid('${key}')">ডিলিট</button>`;
+                list.appendChild(div);
+            });
+        } catch(e) {
+            list.innerHTML = "<p class='muted'>ডাটা লোড করা যায়নি।</p>";
+        }
+    }
+
+    loadAdminVideos();
+
+    async function deleteVid(key) {
+        if(confirm("ভিডিওটি ডিলিট করতে চান?")) {
+            await fetch(`${DB_URL}/videos/${key}.json`, { method: 'DELETE' });
+            loadAdminVideos();
+        }
+    }
+</script>
+</body></html>
