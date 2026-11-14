@@ -16,7 +16,6 @@ header{position:sticky;top:0;background:#090d18eF;backdrop-filter:blur(14px);bor
 .brand{font-size:22px;font-weight:700;letter-spacing:-.4px;display:flex;align-items:center}
 .logo{display:inline-grid;place-items:center;width:35px;height:35px;border-radius:12px;background:linear-gradient(135deg,var(--purple),var(--cyan));margin-right:8px}
 
-/* গোপন অ্যাডমিন বাটন - ডিফল্টভাবে সবার জন্য লুকানো থাকবে */
 .admin-btn { background: #8059ed; color: white; text-decoration: none; padding: 8px 15px; border-radius: 8px; font-size: 14px; font-weight: 600; display: none; align-items: center; }
 
 .section{padding:18px 0 28px}
@@ -50,7 +49,6 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
 <body>
 <header><div class="wrap nav">
  <div class="brand"><span class="logo">▶</span>PlayNest</div>
- <!-- শুধু আপনার জন্য গোপন অ্যাডমিন বাটন -->
  <a href="admin.html" id="adminBtn" class="admin-btn">Admin Panel</a>
 </div></header>
 
@@ -66,14 +64,14 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
     <div class="wrap">ভাইরাল ভিডিও দেখতে আমাদের সাথেই থাকুন ধন্যবাদ</div>
 </footer>
 
-<!-- অটো অ্যাড গেট মোডাল (৩ বার ১০ সেকেন্ড বাধ্যতামূলক) -->
+<!-- অটো অ্যাড গেট মোডাল (৩ বার ১০ সেকেন্ড + অটো অ্যাড ওপেন) -->
 <div class="modal" id="gate" role="dialog" aria-modal="true">
 <div class="dialog">
 <div class="step" id="stepLabel">বিজ্ঞাপন দেখা হচ্ছে (১/৩)</div>
 <h2>অনুগ্রহ করে অপেক্ষা করুন</h2>
-<p>ভিডিওটি চালু হওয়ার আগে বাধ্যতামূলক বিজ্ঞাপন চলছে। সময় শেষ না হওয়া পর্যন্ত অপেক্ষা করুন।</p>
+<p>ভিডিওটি চালু হওয়ার আগে স্পন্সর বিজ্ঞাপন লিংক ওপেন হচ্ছে এবং কাউন্টডাউন চলছে।</p>
 <div class="timer" id="timer">00:10</div>
-<div class="notice" id="status">বিজ্ঞাপন শেষ হওয়ার পর অটোমেটিক পরবর্তী ধাপে যাবে...</div>
+<div class="notice" id="status">সময় শেষ হলে স্বয়ংক্রিয়ভাবে পরবর্তী ধাপে যাবে...</div>
 </div>
 </div>
 
@@ -88,8 +86,8 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
 
 <script>
 const DB_URL = "https://playnest-f4c56-default-rtdb.firebaseio.com";
+const SMART_LINK = "https://bicea.org/14/3751c47066d34edba00176f00bbb2187"; // আপনার অ্যাডস্টার্না স্মার্ট লিংক
 
-// গোপন সিক্রেট চেক: আপনি যখন নিজের ব্রাউজারে লিংক শেষে `#admin` লিখে ঢুকবেন, তখনই কেবল অ্যাডমিন বাটন দেখতে পাবেন।
 if(window.location.hash === '#admin') {
     document.getElementById('adminBtn').style.display = 'inline-flex';
 }
@@ -148,15 +146,18 @@ async function loadFirebaseVideos() {
 function startGate(card) {
     selected = card;
     step = 1;
-    runTimerSequence();
     gate.classList.add('show');
+    runTimerSequence();
 }
 
 function runTimerSequence() {
+    // প্রতিটি ধাপ শুরু হওয়ার সাথে সাথে নতুন ট্যাবে অ্যাডস্টার্না স্মার্ট লিংক ওপেন হবে
+    window.open(SMART_LINK, '_blank');
+
     document.getElementById('stepLabel').textContent = `বিজ্ঞাপন দেখা হচ্ছে (${step}/৩)`;
     remaining = 10;
     timer.textContent = '00:10';
-    status.textContent = `বিজ্ঞাপন ${step} চলছে, দয়া করে অপেক্ষা করুন...`;
+    status.textContent = `বিজ্ঞাপন ${step} চলছে, নতুন ট্যাবে স্পন্সর ভিজিট করুন...`;
 
     clearInterval(tick);
     tick = setInterval(() => {
@@ -167,10 +168,10 @@ function runTimerSequence() {
             clearInterval(tick);
             if (step < 3) {
                 step++;
-                runTimerSequence(); // অটোমেটিক পরের ধাপে যাবে
+                runTimerSequence(); // অটোমেটিক পরের ধাপে ও পরবর্তী অ্যাডে যাবে
             } else {
                 gate.classList.remove('show');
-                openPlayer(selected); // ৩ বার শেষ হলে ভিডিও ওপেন হবে
+                openPlayer(selected); // ৩ ধাপ শেষ হলে ভিডিও প্লে হবে
             }
         }
     }, 1000);
@@ -198,8 +199,5 @@ document.getElementById('closePlayer').onclick = () => {
 
 loadFirebaseVideos();
 </script>
-
-<!-- Adsterra Social Bar: public visitors -->
-<script data-cfasync="false" src="https://bicea.org/14/3751c47066d34edba00176f00bbb2187"></script>
 </body>
 </html>
