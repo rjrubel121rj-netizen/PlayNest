@@ -67,12 +67,12 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
     <div class="wrap">ভাইরাল ভিডিও দেখতে আমাদের সাথেই থাকুন ধন্যবাদ</div>
 </footer>
 
-<!-- অ্যাড গেট মোডাল (স্মার্ট লিংক ওপেন করার জন্য) -->
+<!-- অ্যাড গেট মোডাল (শর্ট করা স্মার্ট লিংক সহ) -->
 <div class="modal" id="gate" role="dialog" aria-modal="true">
 <div class="dialog">
 <h2>ভিডিও দেখতে ক্লিক করুন</h2>
 <p>ভিডিওটি আনলক করতে নিচের বাটনে ক্লিক করে স্পন্সর বিজ্ঞাপন পেজটি একবার ভিজিট করুন।</p>
-<a href="https://asiafilm.org/4/1278a3fafc2670946ad611804ea37acb" id="smartLinkBtn" class="ad-btn" target="_blank">▶ ভিডিও দেখতে ক্লিক করুন</a>
+<a href="https://tinyurl.com/ewyefaw8" id="smartLinkBtn" class="ad-btn" target="_blank">▶ ভিডিও দেখতে ক্লিক করুন</a>
 <div style="margin-top:15px;text-align:right;"><button onclick="closeGate()" style="background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:14px;">বাতিল করুন</button></div>
 </div>
 </div>
@@ -89,7 +89,7 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
 
 <script>
 const DB_URL = "https://playnest-f4c56-default-rtdb.firebaseio.com";
-const SMART_LINK = "https://asiafilm.org/4/1278a3fafc2670946ad611804ea37acb";
+const SMART_LINK = "https://tinyurl.com/ewyefaw8";
 
 if(window.location.hash === '#admin') {
     document.getElementById('adminBtn').style.display = 'inline-flex';
@@ -149,7 +149,7 @@ async function loadFirebaseVideos() {
     }
 }
 
-// যখন ভিজিটর স্মার্ট লিংক বাটনে ক্লিক করবে
+// যখন ভিজিটর শর্ট করা স্মার্ট লিংক বাটনে ক্লিক করবে
 smartLinkBtn.onclick = () => {
     gate.classList.remove('show'); 
     if (selected) {
