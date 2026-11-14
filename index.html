@@ -1,70 +1,205 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#090d18"><title>PlayNest — ভিডিও দেখুন</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090d18">
+<title>PlayNest — ভিডিও দেখুন</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#090d18;--panel:#121a2a;--muted:#9ba8bd;--line:#ffffff18;--purple:#875cf6;--cyan:#22d3ee}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% -10%,#875cf629,transparent 34%),var(--bg);color:#f7f8fc;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
-.wrap{max-width:1200px;margin:auto;padding:0 22px}header{position:sticky;top:0;background:#090d18eF;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);z-index:4}
-.nav{height:70px;display:flex;align-items:center;gap:24px}.brand{font-size:22px;font-weight:850;letter-spacing:-.6px}.logo{display:inline-grid;place-items:center;width:35px;height:35px;border-radius:12px;background:linear-gradient(135deg,var(--purple),var(--cyan));margin-right:8px}
-nav{display:flex;gap:20px}nav a{color:var(--muted);text-decoration:none;font-size:14px}nav a:hover{color:white}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 80% -10%,#875cf629,transparent 34%),var(--bg);color:#f7f8fc;font-family:'Hind Siliguri', system-ui, -apple-system, sans-serif}
+.wrap{max-width:1200px;margin:auto;padding:0 22px}
+header{position:sticky;top:0;background:#090d18eF;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);z-index:4}
+.nav{height:70px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{font-size:22px;font-weight:700;letter-spacing:-.4px;display:flex;align-items:center}
+.logo{display:inline-grid;place-items:center;width:35px;height:35px;border-radius:12px;background:linear-gradient(135deg,var(--purple),var(--cyan));margin-right:8px}
 
-.hero{padding:34px 0 24px}.hero-box{min-height:320px;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:linear-gradient(90deg,#080b14 0%,#080b14d9 48%,#080b1430 100%),url('https://images.unsplash.com/photo-1489599849927-2ee91c1a?auto=format&fit=crop&w=1500&q=85') center/cover}
-.hero-content{max-width:570px;padding:44px 42px}.pill{display:inline-block;padding:7px 11px;border:1px solid #a78bfa66;background:#875cf62b;color:#e0d7ff;border-radius:30px;font-size:12px;font-weight:700}
-h1{font-size:clamp(32px,5vw,50px);line-height:1.1;letter-spacing:-1.5px;margin:18px 0 12px}.hero p{color:#c2cada;line-height:1.7}.btn{border:0;border-radius:11px;padding:12px 17px;background:linear-gradient(120deg,var(--purple),#635cf5);color:white;font-weight:750;cursor:pointer}.btn.secondary{background:#ffffff13;border:1px solid var(--line);margin-left:8px}
-.section{padding:18px 0 28px}.head{display:flex;justify-content:space-between;align-items:end;margin-bottom:16px}h2{font-size:21px;margin:0 0 4px}.muted{color:var(--muted);font-size:13px}
-.chips{display:flex;gap:9px;overflow:auto;padding:3px 0 18px}.chip{white-space:nowrap;border:1px solid var(--line);border-radius:30px;background:#121a2a;color:#c3ccda;padding:9px 15px;cursor:pointer}.chip.active{background:#744de3;color:white}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}.video{cursor:pointer;min-width:0}.thumb{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:15px;background:#192438;border:1px solid var(--line)}.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:.3s}.video:hover img{transform:scale(1.04)}.tag,.duration{position:absolute;background:#080b14d9;padding:4px 7px;border-radius:6px;font-size:11px}.tag{left:9px;top:9px}.duration{right:9px;bottom:9px}
-.info{display:flex;gap:10px;padding-top:10px}.avatar{width:33px;height:33px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--cyan));font-weight:800;flex:none}.info h3{font-size:14px;line-height:1.4;margin:0 0 4px}.empty{display:none;padding:35px;text-align:center;border:1px dashed var(--line);border-radius:15px;color:var(--muted)}
-footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var(--muted);font-size:13px}
-.modal{display:none;position:fixed;inset:0;z-index:10;background:#02040beF;padding:18px;place-items:center}.modal.show{display:grid}.dialog{max-width:510px;width:100%;background:#121a2a;border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 25px 80px #0009}.dialog h2{font-size:23px}.dialog p{color:#bac5d7;line-height:1.65;font-size:14px}.step{font-size:12px;color:#c4b5fd;font-weight:750;letter-spacing:.7px}.timer{font-size:46px;font-weight:850;letter-spacing:-2px;margin:10px 0}.notice{font-size:12px;color:#aab5c8;background:#ffffff08;border:1px solid var(--line);padding:11px;border-radius:10px}.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}.outline{background:#202b40;color:white;border:1px solid var(--line);border-radius:10px;padding:11px 14px;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}
+/* গোপন অ্যাডমিন বাটন - ডিফল্টভাবে সবার জন্য লুকানো থাকবে */
+.admin-btn { background: #8059ed; color: white; text-decoration: none; padding: 8px 15px; border-radius: 8px; font-size: 14px; font-weight: 600; display: none; align-items: center; }
+
+.section{padding:18px 0 28px}
+.head{display:flex;justify-content:space-between;align-items:end;margin-bottom:16px}
+h2{font-size:22px;margin:0 0 4px}
+.muted{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.video{cursor:pointer;min-width:0}
+.thumb{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:15px;background:#192438;border:1px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:.3s}
+.video:hover img{transform:scale(1.04)}
+.tag,.duration{position:absolute;background:#080b14d9;padding:4px 7px;border-radius:6px;font-size:11px}
+.tag{left:9px;top:9px}.duration{right:9px;bottom:9px}
+.info{display:flex;gap:10px;padding-top:10px}
+.avatar{width:33px;height:33px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--cyan));font-weight:700;flex:none}
+.info h3{font-size:15px;line-height:1.4;margin:0 0 4px}
+.empty{display:none;padding:35px;text-align:center;border:1px dashed var(--line);border-radius:15px;color:var(--muted);grid-column:1/-1;font-size:16px}
+footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var(--muted);font-size:15px;text-align:center}
+.modal{display:none;position:fixed;inset:0;z-index:10;background:#02040beF;padding:18px;place-items:center}
+.modal.show{display:grid}
+.dialog{max-width:510px;width:100%;background:#121a2a;border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 25px 80px #0009}
+.dialog h2{font-size:23px}
+.dialog p{color:#bac5d7;line-height:1.65;font-size:15px}
+.step{font-size:12px;color:#c4b5fd;font-weight:700;letter-spacing:.7px}
+.timer{font-size:46px;font-weight:700;letter-spacing:-2px;margin:10px 0}
+.notice{font-size:13px;color:#aab5c8;background:#ffffff08;border:1px solid var(--line);padding:11px;border-radius:10px}
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.wrap{padding:0 15px}.nav{height:64px;gap:10px}.brand{font-size:19px}.grid{gap:16px 12px}.info h3{font-size:13px}}
-</style></head>
+@media(max-width:560px){.wrap{padding:0 15px}.nav{height:64px;gap:10px}.brand{font-size:19px}.grid{gap:16px 12px}.info h3{font-size:14px}}
+</style>
+</head>
 <body>
 <header><div class="wrap nav">
  <div class="brand"><span class="logo">▶</span>PlayNest</div>
+ <!-- শুধু আপনার জন্য গোপন অ্যাডমিন বাটন -->
+ <a href="admin.html" id="adminBtn" class="admin-btn">Admin Panel</a>
 </div></header>
+
 <main class="wrap">
-<section class="section" id="videos"><div class="head"><div><h2>ভিডিও দেখুন</h2></div></div>
-<div class="grid" id="grid">
-<article class="video" data-cat="মুভি" data-title="সিনেমাটিক গল্প: নতুন এক অভিযান" data-src=""><div class="thumb"><img src="https://images.unsplash.com/photo-1489599849927-2ee91c1a?auto=format&fit=crop&w=700&q=80" alt="সিনেমাটিক দৃশ্য"><span class="tag">মুভি</span><span class="duration">12:45</span></div><div class="info"><div class="avatar">P</div><div><h3>সিনেমাটিক গল্প: নতুন এক অভিযান</h3><div class="muted">PlayNest Studio • Demo</div></div></div></article>
-<article class="video" data-cat="মিউজিক" data-title="মন ভালো করা সুর | Music Session"><div class="thumb"><img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=700&q=80" alt="মিউজিক"><span class="tag">মিউজিক</span><span class="duration">04:32</span></div><div class="info"><div class="avatar">P</div><div><h3>মন ভালো করা সুর | Music Session</h3><div class="muted">PlayNest Music • Demo</div></div></div></article>
-<article class="video" data-cat="খেলাধুলা" data-title="ফুটবলের সেরা মুহূর্তগুলো"><div class="thumb"><img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=700&q=80" alt="ফুটবল"><span class="tag">খেলাধুলা</span><span class="duration">08:10</span></div><div class="info"><div class="avatar">P</div><div><h3>ফুটবলের সেরা মুহূর্তগুলো</h3><div class="muted">PlayNest Sports • Demo</div></div></div></article>
-<article class="video" data-cat="অ্যানিমেশন" data-title="রঙিন কার্টুনের মজার দুনিয়া"><div class="thumb"><img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=700&q=80" alt="অ্যানিমেশন"><span class="tag">অ্যানিমেশন</span><span class="duration">06:18</span></div><div class="info"><div class="avatar">P</div><div><h3>রঙিন কার্টুনের মজার দুনিয়া</h3><div class="muted">PlayNest Kids • Demo</div></div></div></article>
-<article class="video" data-cat="শিক্ষা" data-title="মোবাইলে ভিডিও এডিটিং শিখুন"><div class="thumb"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=80" alt="শিক্ষা"><span class="tag">শিক্ষা</span><span class="duration">15:06</span></div><div class="info"><div class="avatar">P</div><div><h3>মোবাইলে ভিডিও এডিটিং শিখুন</h3><div class="muted">PlayNest Learn • Demo</div></div></div></article>
-<article class="video" data-cat="কমেডি" data-title="হাসির ছোট্ট বিরতি"><div class="thumb"><img src="https://images.unsplash.com/photo-1527224857830-43a7acc85260?auto=format&fit=crop&w=700&q=80" alt="কমেডি"><span class="tag">কমেডি</span><span class="duration">03:51</span></div><div class="info"><div class="avatar">P</div><div><h3>হাসির ছোট্ট বিরতি</h3><div class="muted">PlayNest Fun • Demo</div></div></div></article>
-</div><div class="empty" id="empty">কোনো ভিডিও পাওয়া যায়নি।</div></section>
-</main><footer><div class="wrap">© 2026 PlayNest • তোমার ভিডিও, তোমার দুনিয়া।</div></footer>
+<section class="section" id="videos">
+<div class="head"><div><h2>ভিডিও দেখতে ভিডিওতে ক্লিক করুন</h2></div></div>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" style="display:block;">বর্তমানে কোনো ভিডিও নেই। নতুন ভিডিও শীঘ্রই আসছে।</div>
+</section>
+</main>
 
-<div class="modal" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle"><div class="dialog">
-<div class="step" id="stepLabel">ADVERTISEMENT 1 OF 3</div><h2 id="gateTitle">ভিডিও চালুর আগে স্পনসর লিংক</h2>
-<p>নতুন ট্যাবে স্পনসর লিংক খুলবে। সেখানে যা দেখানো হয় তা দেখে এই পেজে ফিরে এসে অপেক্ষা শেষ হলে Continue চাপুন।</p>
-<div class="timer" id="timer">00:10</div><div class="notice" id="status">প্রথমে “স্পনসর লিংক খুলুন” চাপুন। Countdown শুরু হবে।</div>
-<div class="actions"><button class="outline" id="sponsor">স্পনসর লিংক খুলুন ↗</button><button class="btn" id="continue" disabled>Continue</button></div>
-</div></div>
+<footer>
+    <div class="wrap">ভাইরাল ভিডিও দেখতে আমাদের সাথেই থাকুন ধন্যবাদ</div>
+</footer>
 
-<div class="modal" id="player" role="dialog" aria-modal="true"><div class="dialog">
-<h2 id="playerTitle">ভিডিও প্লেয়ার</h2><p>বিজ্ঞাপনের তিনটি ধাপ শেষ হয়েছে। আসল ভিডিও ফাইল যুক্ত হলে এখানে ভিডিও চলবে।</p>
+<!-- অটো অ্যাড গেট মোডাল (৩ বার ১০ সেকেন্ড বাধ্যতামূলক) -->
+<div class="modal" id="gate" role="dialog" aria-modal="true">
+<div class="dialog">
+<div class="step" id="stepLabel">বিজ্ঞাপন দেখা হচ্ছে (১/৩)</div>
+<h2>অনুগ্রহ করে অপেক্ষা করুন</h2>
+<p>ভিডিওটি চালু হওয়ার আগে বাধ্যতামূলক বিজ্ঞাপন চলছে। সময় শেষ না হওয়া পর্যন্ত অপেক্ষা করুন।</p>
+<div class="timer" id="timer">00:10</div>
+<div class="notice" id="status">বিজ্ঞাপন শেষ হওয়ার পর অটোমেটিক পরবর্তী ধাপে যাবে...</div>
+</div>
+</div>
+
+<!-- ভিডিও প্লেয়ার মোডাল -->
+<div class="modal" id="player" role="dialog" aria-modal="true">
+<div class="dialog">
+<h2 id="playerTitle">ভিডিও প্লেয়ার</h2><p>আপনার কাঙ্ক্ষিত ভিডিওটি নিচে প্লে হচ্ছে।</p>
 <video id="videoEl" controls playsinline style="width:100%;max-height:55vh;background:#000;border-radius:12px;display:none"></video>
-<div class="actions"><button class="outline" id="closePlayer">বন্ধ করুন</button></div>
-</div></div>
+<div style="margin-top:18px;text-align:right;"><button class="admin-btn" id="closePlayer" style="display:inline-block;border:0;cursor:pointer;">বন্ধ করুন</button></div>
+</div>
+</div>
+
 <script>
-const SMART_LINK='https://asiafilm.org/4/1278a3fafc2670946ad611804ea37acb';
-const cards=[...document.querySelectorAll('.video')];
-let selected=null,step=0,remaining=10,tick=null,sponsorOpened=false;
-document.getElementById('empty').style.display=cards.length?'none':'block';
-const gate=document.getElementById('gate'),timer=document.getElementById('timer'),status=document.getElementById('status'),cont=document.getElementById('continue'),sponsor=document.getElementById('sponsor');
-function renderStep(){document.getElementById('stepLabel').textContent=`ADVERTISEMENT ${step+1} OF 3`;timer.textContent='00:10';remaining=10;sponsorOpened=false;cont.disabled=true;sponsor.disabled=false;status.textContent='প্রথমে “স্পনসর লিংক খুলুন” চাপুন। তারপর ১০ সেকেন্ড অপেক্ষা করুন।'}
-function startGate(card){selected=card;step=0;renderStep();gate.classList.add('show')}
-cards.forEach(c=>c.addEventListener('click',()=>startGate(c)));
-sponsor.onclick=()=>{if(sponsorOpened)return;const w=window.open(SMART_LINK,'_blank','noopener,noreferrer');sponsorOpened=true;sponsor.disabled=true;status.textContent=w?'স্পনসর লিংক নতুন ট্যাবে খোলা হয়েছে। Countdown চলছে।':'পপ-আপ ব্লক হতে পারে। ব্রাউজারের পপ-আপ অনুমতি দিন, তারপর আবার চেষ্টা করুন।';if(!w){sponsorOpened=false;sponsor.disabled=false;return}
- clearInterval(tick);tick=setInterval(()=>{remaining--;timer.textContent='00:'+String(remaining).padStart(2,'0');if(remaining<=0){clearInterval(tick);cont.disabled=false;status.textContent='১০ সেকেন্ড শেষ। Continue চাপলে পরের ধাপে যাবেন।'}},1000)};
-cont.onclick=()=>{if(cont.disabled)return;if(step<2){step++;renderStep()}else{gate.classList.remove('show');openPlayer(selected)}};
-function openPlayer(card){document.getElementById('playerTitle').textContent=card.dataset.title;const v=document.getElementById('videoEl');if(card.dataset.src){v.src=card.dataset.src;v.style.display='block';v.play().catch(()=>{})}else{v.removeAttribute('src');v.style.display='none'}document.getElementById('player').classList.add('show')}
-document.getElementById('closePlayer').onclick=()=>{const v=document.getElementById('videoEl');v.pause();document.getElementById('player').classList.remove('show')};
-gate.addEventListener('click',e=>{if(e.target===gate){clearInterval(tick);gate.classList.remove('show')}});
-</script><!-- Adsterra Social Bar: public visitors -->
+const DB_URL = "https://playnest-f4c56-default-rtdb.firebaseio.com";
+
+// গোপন সিক্রেট চেক: আপনি যখন নিজের ব্রাউজারে লিংক শেষে `#admin` লিখে ঢুকবেন, তখনই কেবল অ্যাডমিন বাটন দেখতে পাবেন।
+if(window.location.hash === '#admin') {
+    document.getElementById('adminBtn').style.display = 'inline-flex';
+}
+
+let selected = null, step = 1, remaining = 10, tick = null;
+const gate = document.getElementById('gate'), timer = document.getElementById('timer'), status = document.getElementById('status');
+
+async function loadFirebaseVideos() {
+    const grid = document.getElementById('grid');
+    const emptyDiv = document.getElementById('empty');
+    
+    try {
+        let res = await fetch(`${DB_URL}/videos.json`);
+        let data = await res.json();
+        
+        grid.innerHTML = "";
+        
+        if (!data) {
+            emptyDiv.style.display = 'block';
+            return;
+        }
+        
+        emptyDiv.style.display = 'none';
+        
+        Object.keys(data).reverse().forEach(key => {
+            let v = data[key];
+            let article = document.createElement('article');
+            article.className = 'video';
+            article.dataset.title = v.title;
+            article.dataset.src = v.videoUrl;
+            
+            article.innerHTML = `
+                <div class="thumb">
+                    <img src="${v.thumb}" alt="${v.title}">
+                    <span class="tag">${v.category || 'ভিডিও'}</span>
+                    <span class="duration">${v.duration || '00:00'}</span>
+                </div>
+                <div class="info">
+                    <div class="avatar">P</div>
+                    <div>
+                        <h3>${v.title}</h3>
+                        <div class="muted">PlayNest • লাইভ</div>
+                    </div>
+                </div>
+            `;
+            
+            article.addEventListener('click', () => startGate(article));
+            grid.appendChild(article);
+        });
+    } catch (e) {
+        emptyDiv.style.display = 'block';
+        emptyDiv.textContent = 'ভিডিও লোড করতে সমস্যা হয়েছে।';
+    }
+}
+
+function startGate(card) {
+    selected = card;
+    step = 1;
+    runTimerSequence();
+    gate.classList.add('show');
+}
+
+function runTimerSequence() {
+    document.getElementById('stepLabel').textContent = `বিজ্ঞাপন দেখা হচ্ছে (${step}/৩)`;
+    remaining = 10;
+    timer.textContent = '00:10';
+    status.textContent = `বিজ্ঞাপন ${step} চলছে, দয়া করে অপেক্ষা করুন...`;
+
+    clearInterval(tick);
+    tick = setInterval(() => {
+        remaining--;
+        timer.textContent = '00:' + String(remaining).padStart(2, '0');
+        
+        if (remaining <= 0) {
+            clearInterval(tick);
+            if (step < 3) {
+                step++;
+                runTimerSequence(); // অটোমেটিক পরের ধাপে যাবে
+            } else {
+                gate.classList.remove('show');
+                openPlayer(selected); // ৩ বার শেষ হলে ভিডিও ওপেন হবে
+            }
+        }
+    }, 1000);
+}
+
+function openPlayer(card) {
+    document.getElementById('playerTitle').textContent = card.dataset.title;
+    const v = document.getElementById('videoEl');
+    if (card.dataset.src) {
+        v.src = card.dataset.src;
+        v.style.display = 'block';
+        v.play().catch(()=>{})
+    } else {
+        v.removeAttribute('src');
+        v.style.display = 'none';
+    }
+    document.getElementById('player').classList.add('show');
+}
+
+document.getElementById('closePlayer').onclick = () => {
+    const v = document.getElementById('videoEl');
+    v.pause();
+    document.getElementById('player').classList.remove('show');
+};
+
+loadFirebaseVideos();
+</script>
+
+<!-- Adsterra Social Bar: public visitors -->
 <script data-cfasync="false" src="https://bicea.org/14/3751c47066d34edba00176f00bbb2187"></script>
-</body></html>
+</body>
+</html>
