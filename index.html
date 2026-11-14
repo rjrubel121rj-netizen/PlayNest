@@ -6,18 +6,22 @@
 <meta name="theme-color" content="#090d18">
 <title>PlayNest — ভিডিও দেখুন</title>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- Adsterra Social Bar Script -->
+<script data-cfasync="false" src="https://bicea.org/14/3751c47066d34edba00176f00bbb2187"></script>
+
 <style>
 :root{--bg:#090d18;--panel:#121a2a;--muted:#9ba8bd;--line:#ffffff18;--purple:#875cf6;--cyan:#22d3ee}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(circle at 80% -10%,#875cf629,transparent 34%),var(--bg);color:#f7f8fc;font-family:'Hind Siliguri', system-ui, -apple-system, sans-serif}
+body{margin:0;background:radial-gradient(circle at 80% -10%,#875cf629,transparent 34%),var(--bg);color:#f7f8fc;font-family:'Hind Siliguri',system-ui,sans-serif}
 .wrap{max-width:1200px;margin:auto;padding:0 22px}
 header{position:sticky;top:0;background:#090d18eF;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);z-index:4}
 .nav{height:70px;display:flex;align-items:center;justify-content:space-between;gap:24px}
-.brand{font-size:22px;font-weight:700;letter-spacing:-.4px;display:flex;align-items:center}
+.brand{font-size:22px;font-weight:700;display:flex;align-items:center}
 .logo{display:inline-grid;place-items:center;width:35px;height:35px;border-radius:12px;background:linear-gradient(135deg,var(--purple),var(--cyan));margin-right:8px}
-
-.admin-btn { background: #8059ed; color: white; text-decoration: none; padding: 8px 15px; border-radius: 8px; font-size: 14px; font-weight: 600; display: none; align-items: center; }
-
+.nav-right{display:flex;align-items:center;gap:10px}
+.admin-btn { background: #8059ed; color: white; text-decoration: none; padding: 8px 15px; border-radius: 8px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; }
+#adminBtn { display: none; }
 .section{padding:18px 0 28px}
 .head{display:flex;justify-content:space-between;align-items:end;margin-bottom:16px}
 h2{font-size:22px;margin:0 0 4px}
@@ -27,21 +31,18 @@ h2{font-size:22px;margin:0 0 4px}
 .thumb{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:15px;background:#192438;border:1px solid var(--line)}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:.3s}
 .video:hover img{transform:scale(1.04)}
-.tag,.duration{position:absolute;background:#080b14d9;padding:4px 7px;border-radius:6px;font-size:11px}
-.tag{left:9px;top:9px}.duration{right:9px;bottom:9px}
 .info{display:flex;gap:10px;padding-top:10px}
 .avatar{width:33px;height:33px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--cyan));font-weight:700;flex:none}
 .info h3{font-size:15px;line-height:1.4;margin:0 0 4px}
 .empty{display:none;padding:35px;text-align:center;border:1px dashed var(--line);border-radius:15px;color:var(--muted);grid-column:1/-1;font-size:16px}
 footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var(--muted);font-size:15px;text-align:center}
-.modal{display:none;position:fixed;inset:0;z-index:10;background:#02040beF;padding:18px;place-items:center}
+.modal{display:none;position:fixed;inset:0;z-index:10;background:#02040beF;padding:18px;place-items:center;overflow-y:auto}
 .modal.show{display:grid}
-.dialog{max-width:510px;width:100%;background:#121a2a;border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 25px 80px #0009}
-.dialog h2{font-size:23px}
-.dialog p{color:#bac5d7;line-height:1.65;font-size:15px}
-.step{font-size:12px;color:#c4b5fd;font-weight:700;letter-spacing:.7px}
-.timer{font-size:46px;font-weight:700;letter-spacing:-2px;margin:10px 0}
-.notice{font-size:13px;color:#aab5c8;background:#ffffff08;border:1px solid var(--line);padding:11px;border-radius:10px}
+.dialog{max-width:510px;width:100%;background:#121a2a;border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 25px 80px #0009;text-align:center}
+.dialog h2{font-size:20px;margin-bottom:10px;text-align:left}
+.dialog p{text-align:left;color:#bac5d7;font-size:14px;margin-bottom:20px}
+.ad-btn { display: block; width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 700; border: 0; border-radius: 12px; cursor: pointer; font-size: 16px; text-decoration: none; text-align: center; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+.video-desc { background: #080b14; padding: 12px; border-radius: 10px; margin-top: 12px; font-size: 14px; color: #cbd5e1; word-break: break-all; white-space: pre-wrap; border: 1px solid var(--line); text-align: left; }
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.wrap{padding:0 15px}.nav{height:64px;gap:10px}.brand{font-size:19px}.grid{gap:16px 12px}.info h3{font-size:14px}}
 </style>
@@ -49,7 +50,9 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
 <body>
 <header><div class="wrap nav">
  <div class="brand"><span class="logo">▶</span>PlayNest</div>
- <a href="admin.html" id="adminBtn" class="admin-btn">Admin Panel</a>
+ <div class="nav-right">
+    <a href="admin.html" id="adminBtn" class="admin-btn">Admin Panel</a>
+ </div>
 </div></header>
 
 <main class="wrap">
@@ -64,36 +67,37 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
     <div class="wrap">ভাইরাল ভিডিও দেখতে আমাদের সাথেই থাকুন ধন্যবাদ</div>
 </footer>
 
-<!-- অটো অ্যাড গেট মোডাল (৩ বার ১০ সেকেন্ড + অটো অ্যাড ওপেন) -->
+<!-- অ্যাড গেট মোডাল (স্মার্ট লিংক ওপেন করার জন্য) -->
 <div class="modal" id="gate" role="dialog" aria-modal="true">
 <div class="dialog">
-<div class="step" id="stepLabel">বিজ্ঞাপন দেখা হচ্ছে (১/৩)</div>
-<h2>অনুগ্রহ করে অপেক্ষা করুন</h2>
-<p>ভিডিওটি চালু হওয়ার আগে স্পন্সর বিজ্ঞাপন লিংক ওপেন হচ্ছে এবং কাউন্টডাউন চলছে।</p>
-<div class="timer" id="timer">00:10</div>
-<div class="notice" id="status">সময় শেষ হলে স্বয়ংক্রিয়ভাবে পরবর্তী ধাপে যাবে...</div>
+<h2>ভিডিও দেখতে ক্লিক করুন</h2>
+<p>ভিডিওটি আনলক করতে নিচের বাটনে ক্লিক করে স্পন্সর বিজ্ঞাপন পেজটি একবার ভিজিট করুন।</p>
+<a href="https://asiafilm.org/4/1278a3fafc2670946ad611804ea37acb" id="smartLinkBtn" class="ad-btn" target="_blank">▶ ভিডিও দেখতে ক্লিক করুন</a>
+<div style="margin-top:15px;text-align:right;"><button onclick="closeGate()" style="background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:14px;">বাতিল করুন</button></div>
 </div>
 </div>
 
 <!-- ভিডিও প্লেয়ার মোডাল -->
 <div class="modal" id="player" role="dialog" aria-modal="true">
-<div class="dialog">
-<h2 id="playerTitle">ভিডিও প্লেয়ার</h2><p>আপনার কাঙ্ক্ষিত ভিডিওটি নিচে প্লে হচ্ছে।</p>
-<video id="videoEl" controls playsinline style="width:100%;max-height:55vh;background:#000;border-radius:12px;display:none"></video>
+<div class="dialog" style="text-align:left;">
+<h2 id="playerTitle">ভিডিও প্লেয়ার</h2>
+<video id="videoEl" controls playsinline style="width:100%;max-height:45vh;background:#000;border-radius:12px;display:none"></video>
+<div class="video-desc" id="playerDesc"></div>
 <div style="margin-top:18px;text-align:right;"><button class="admin-btn" id="closePlayer" style="display:inline-block;border:0;cursor:pointer;">বন্ধ করুন</button></div>
 </div>
 </div>
 
 <script>
 const DB_URL = "https://playnest-f4c56-default-rtdb.firebaseio.com";
-const SMART_LINK = "https://bicea.org/14/3751c47066d34edba00176f00bbb2187"; // আপনার অ্যাডস্টার্না স্মার্ট লিংক
+const SMART_LINK = "https://asiafilm.org/4/1278a3fafc2670946ad611804ea37acb";
 
 if(window.location.hash === '#admin') {
     document.getElementById('adminBtn').style.display = 'inline-flex';
 }
 
-let selected = null, step = 1, remaining = 10, tick = null;
-const gate = document.getElementById('gate'), timer = document.getElementById('timer'), status = document.getElementById('status');
+let selected = null;
+const gate = document.getElementById('gate');
+const smartLinkBtn = document.getElementById('smartLinkBtn');
 
 async function loadFirebaseVideos() {
     const grid = document.getElementById('grid');
@@ -118,12 +122,11 @@ async function loadFirebaseVideos() {
             article.className = 'video';
             article.dataset.title = v.title;
             article.dataset.src = v.videoUrl;
+            article.dataset.desc = v.desc || '';
             
             article.innerHTML = `
                 <div class="thumb">
                     <img src="${v.thumb}" alt="${v.title}">
-                    <span class="tag">${v.category || 'ভিডিও'}</span>
-                    <span class="duration">${v.duration || '00:00'}</span>
                 </div>
                 <div class="info">
                     <div class="avatar">P</div>
@@ -134,7 +137,10 @@ async function loadFirebaseVideos() {
                 </div>
             `;
             
-            article.addEventListener('click', () => startGate(article));
+            article.addEventListener('click', () => {
+                selected = article;
+                gate.classList.add('show');
+            });
             grid.appendChild(article);
         });
     } catch (e) {
@@ -143,42 +149,21 @@ async function loadFirebaseVideos() {
     }
 }
 
-function startGate(card) {
-    selected = card;
-    step = 1;
-    gate.classList.add('show');
-    runTimerSequence();
-}
+// যখন ভিজিটর স্মার্ট লিংক বাটনে ক্লিক করবে
+smartLinkBtn.onclick = () => {
+    gate.classList.remove('show'); 
+    if (selected) {
+        openPlayer(selected); 
+    }
+};
 
-function runTimerSequence() {
-    // প্রতিটি ধাপ শুরু হওয়ার সাথে সাথে নতুন ট্যাবে অ্যাডস্টার্না স্মার্ট লিংক ওপেন হবে
-    window.open(SMART_LINK, '_blank');
-
-    document.getElementById('stepLabel').textContent = `বিজ্ঞাপন দেখা হচ্ছে (${step}/৩)`;
-    remaining = 10;
-    timer.textContent = '00:10';
-    status.textContent = `বিজ্ঞাপন ${step} চলছে, নতুন ট্যাবে স্পন্সর ভিজিট করুন...`;
-
-    clearInterval(tick);
-    tick = setInterval(() => {
-        remaining--;
-        timer.textContent = '00:' + String(remaining).padStart(2, '0');
-        
-        if (remaining <= 0) {
-            clearInterval(tick);
-            if (step < 3) {
-                step++;
-                runTimerSequence(); // অটোমেটিক পরের ধাপে ও পরবর্তী অ্যাডে যাবে
-            } else {
-                gate.classList.remove('show');
-                openPlayer(selected); // ৩ ধাপ শেষ হলে ভিডিও প্লে হবে
-            }
-        }
-    }, 1000);
+function closeGate() {
+    gate.classList.remove('show');
 }
 
 function openPlayer(card) {
     document.getElementById('playerTitle').textContent = card.dataset.title;
+    document.getElementById('playerDesc').textContent = card.dataset.desc || 'কোনো ডেসক্রিপশন নেই';
     const v = document.getElementById('videoEl');
     if (card.dataset.src) {
         v.src = card.dataset.src;
