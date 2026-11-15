@@ -35,10 +35,8 @@ h2{font-size:22px;margin:0 0 4px}
 .avatar{width:33px;height:33px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--cyan));font-weight:700;flex:none}
 .info h3{font-size:15px;line-height:1.4;margin:0 0 4px}
 .meta-row{display:flex;align-items:center;gap:8px;margin-top:2px;font-size:13px;color:var(--muted);flex-wrap:wrap}
-.list-like-btn, .list-share-btn { background: none; border: 0; cursor: pointer; padding: 0; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; font-family: inherit; }
-.list-like-btn { color: #f43f5e; }
-.list-share-btn { color: #22d3ee; }
-.list-like-btn:hover, .list-share-btn:hover { opacity: 0.8; }
+.list-like-btn { background: none; border: 0; cursor: pointer; padding: 0; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; font-family: inherit; color: #f43f5e; }
+.list-like-btn:hover { opacity: 0.8; }
 .empty{display:block;padding:35px;text-align:center;border:1px dashed var(--line);border-radius:15px;color:var(--muted);grid-column:1/-1;font-size:16px}
 footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var(--muted);font-size:15px;text-align:center}
 .modal{display:none;position:fixed;inset:0;z-index:10;background:#02040beF;padding:18px;place-items:center;overflow-y:auto}
@@ -73,7 +71,7 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
     <div class="wrap">ভাইরাল ভিডিও দেখতে আমাদের সাথেই থাকুন ধন্যবাদ</div>
 </footer>
 
-<!-- অ্যাড গেট মোডাল (যার উপরে থাম্বনেইল ও ভিডিও দেখার বাটন থাকবে) -->
+<!-- অ্যাড গেট মোডাল -->
 <div class="modal" id="gate" role="dialog" aria-modal="true">
 <div class="dialog" style="text-align:center;">
 <h2 id="gateTitle">ভিডিও দেখতে ক্লিক করুন</h2>
@@ -103,7 +101,7 @@ if(window.location.hash === '#admin') {
 }
 
 let selectedKey = null, selectedData = null;
-let allVideosData = {}; // সমস্ত ভিডিওর ডেটা ক্যাশ করে রাখার জন্য
+let allVideosData = {};
 const gate = document.getElementById('gate');
 const smartLinkBtn = document.getElementById('smartLinkBtn');
 
@@ -121,15 +119,13 @@ async function loadFirebaseVideos() {
             return;
         }
         
-        allVideosData = data; // ডেটা সেভ করে রাখলাম
-        const siteBaseUrl = window.location.href.split('#')[0].split('?')[0];
+        allVideosData = data;
 
         let keys = Object.keys(data).reverse();
         keys.forEach(key => {
             let v = data[key];
             let views = v.views || 0;
             let likes = v.likes || 0;
-            let videoShareLink = `${siteBaseUrl}#v=${key}`;
 
             let article = document.createElement('article');
             article.className = 'video';
@@ -146,14 +142,11 @@ async function loadFirebaseVideos() {
                             <span>👁️ ${views} views</span>
                             <span>•</span>
                             <button class="list-like-btn" onclick="handleLike(event, '${key}')">❤️ <span id="like-count-${key}">${likes}</span></button>
-                            <span>•</span>
-                            <button class="list-share-btn" onclick="shareVideo(event, '${videoShareLink}', this)">🔗 শেয়ার</button>
                         </div>
                     </div>
                 </div>
             `;
             
-            // থাম্বনেইল বা টাইটেলে ক্লিক করলে গেট ওপেন হবে
             article.querySelector('.thumb').addEventListener('click', () => {
                 openGate(key, v);
             });
@@ -164,7 +157,6 @@ async function loadFirebaseVideos() {
             grid.appendChild(article);
         });
 
-        // যদি সরাসরি শেয়ার লিংকে ঢোকা হয় (#v=KEY)
         checkUrlHash();
 
     } catch (e) {
@@ -202,19 +194,6 @@ window.handleLike = async function(event, key) {
             body: JSON.stringify(currentLikes)
         });
     } catch(e) {}
-};
-
-window.shareVideo = function(event, link, btn) {
-    event.stopPropagation();
-    navigator.clipboard.writeText(link).then(() => {
-        let originalText = btn.textContent;
-        btn.textContent = '✅ কপি হয়েছে';
-        setTimeout(() => {
-            btn.textContent = originalText;
-        }, 2000);
-    }).catch(err => {
-        alert('লিংক কপি করা যায়নি!');
-    });
 };
 
 smartLinkBtn.onclick = async () => {
