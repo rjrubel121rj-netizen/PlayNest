@@ -34,10 +34,12 @@ h2{font-size:22px;margin:0 0 4px}
 .info{display:flex;gap:10px;padding-top:10px}
 .avatar{width:33px;height:33px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--cyan));font-weight:700;flex:none}
 .info h3{font-size:15px;line-height:1.4;margin:0 0 4px}
-.meta-row{display:flex;align-items:center;gap:10px;margin-top:2px;font-size:13px;color:var(--muted)}
-.list-like-btn { background: none; border: 0; color: #f43f5e; cursor: pointer; padding: 0; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; font-family: inherit; }
-.list-like-btn:hover { opacity: 0.8; }
-.empty{display:none;padding:35px;text-align:center;border:1px dashed var(--line);border-radius:15px;color:var(--muted);grid-column:1/-1;font-size:16px}
+.meta-row{display:flex;align-items:center;gap:8px;margin-top:2px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.list-like-btn, .list-share-btn { background: none; border: 0; cursor: pointer; padding: 0; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; font-family: inherit; }
+.list-like-btn { color: #f43f5e; }
+.list-share-btn { color: #22d3ee; }
+.list-like-btn:hover, .list-share-btn:hover { opacity: 0.8; }
+.empty{display:block;padding:35px;text-align:center;border:1px dashed var(--line);border-radius:15px;color:var(--muted);grid-column:1/-1;font-size:16px}
 footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var(--muted);font-size:15px;text-align:center}
 .modal{display:none;position:fixed;inset:0;z-index:10;background:#02040beF;padding:18px;place-items:center;overflow-y:auto}
 .modal.show{display:grid}
@@ -60,8 +62,9 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
 <main class="wrap">
 <section class="section" id="videos">
 <div class="head"><div><h2>ভিডিও দেখতে ভিডিওতে ক্লিক করুন</h2></div></div>
-<div class="grid" id="grid"></div>
-<div class="empty" id="empty" style="display:block;">বর্তমানে কোনো ভিডিও নেই। নতুন ভিডিও শীঘ্রই আসছে।</div>
+<div class="grid" id="grid">
+    <div class="empty" id="empty">ভিডিও লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</div>
+</div>
 </section>
 </main>
 
@@ -103,7 +106,6 @@ const smartLinkBtn = document.getElementById('smartLinkBtn');
 
 async function loadFirebaseVideos() {
     const grid = document.getElementById('grid');
-    const emptyDiv = document.getElementById('empty');
     
     try {
         let res = await fetch(`${DB_URL}/videos.json`);
@@ -112,17 +114,19 @@ async function loadFirebaseVideos() {
         grid.innerHTML = "";
         
         if (!data) {
-            emptyDiv.style.display = 'block';
+            grid.innerHTML = `<div class="empty" id="empty">বর্তমানে কোনো ভিডিও নেই। নতুন ভিডিও শীঘ্রই আসছে।</div>`;
             return;
         }
         
-        emptyDiv.style.display = 'none';
-        
+        const siteBaseUrl = window.location.href.split('#')[0];
+
         let keys = Object.keys(data).reverse();
         keys.forEach(key => {
             let v = data[key];
             let views = v.views || 0;
             let likes = v.likes || 0;
+            let videoShareLink = `${siteBaseUrl}#video=${key}`;
+
             let article = document.createElement('article');
             article.className = 'video';
             
@@ -138,12 +142,13 @@ async function loadFirebaseVideos() {
                             <span>👁️ ${views} views</span>
                             <span>•</span>
                             <button class="list-like-btn" onclick="handleLike(event, '${key}')">❤️ <span id="like-count-${key}">${likes}</span></button>
+                            <span>•</span>
+                            <button class="list-share-btn" onclick="shareVideo(event, '${videoShareLink}', this)">🔗 শেয়ার</button>
                         </div>
                     </div>
                 </div>
             `;
             
-            // থাম্বনেইল বা টাইটেলে ক্লিক করলে অ্যাড গেট ওপেন হবে
             article.querySelector('.thumb').addEventListener('click', () => {
                 selectedKey = key;
                 selectedData = v;
@@ -157,15 +162,27 @@ async function loadFirebaseVideos() {
 
             grid.appendChild(article);
         });
+
+        checkUrlHash(data);
+
     } catch (e) {
-        emptyDiv.style.display = 'block';
-        emptyDiv.textContent = 'ভিডিও লোড করতে সমস্যা হয়েছে।';
+        grid.innerHTML = `<div class="empty" id="empty">ভিডিও লোড করতে সমস্যা হয়েছে।</div>`;
     }
 }
 
-// সরাসরি বাইরে থেকে লাইক বাড়ানোর ফাংশন
+function checkUrlHash(data) {
+    if(window.location.hash.startsWith('#video=')) {
+        let targetKey = window.location.hash.replace('#video=', '');
+        if(data[targetKey]) {
+            selectedKey = targetKey;
+            selectedData = data[targetKey];
+            gate.classList.add('show');
+        }
+    }
+}
+
 window.handleLike = async function(event, key) {
-    event.stopPropagation(); // যাতে ভিডিও ওপেন না হয়ে যায়
+    event.stopPropagation();
     const countSpan = document.getElementById(`like-count-${key}`);
     let currentLikes = parseInt(countSpan.textContent) || 0;
     currentLikes++;
@@ -177,6 +194,20 @@ window.handleLike = async function(event, key) {
             body: JSON.stringify(currentLikes)
         });
     } catch(e) {}
+};
+
+// শেয়ার বাটন ক্লিক করলে লিংক কপি হবে
+window.shareVideo = function(event, link, btn) {
+    event.stopPropagation();
+    navigator.clipboard.writeText(link).then(() => {
+        let originalText = btn.textContent;
+        btn.textContent = '✅ কপি হয়েছে';
+        setTimeout(() => {
+            btn.textContent = originalText;
+        }, 2000);
+    }).catch(err => {
+        alert('লিংক কপি করা যায়নি!');
+    });
 };
 
 smartLinkBtn.onclick = async () => {
@@ -199,6 +230,9 @@ smartLinkBtn.onclick = async () => {
 
 function closeGate() {
     gate.classList.remove('show');
+    if(window.location.hash.startsWith('#video=')) {
+        history.pushState("", document.title, window.location.pathname);
+    }
 }
 
 function openPlayer(v) {
@@ -222,6 +256,9 @@ document.getElementById('closePlayer').onclick = () => {
     const videoEl = document.getElementById('videoEl');
     videoEl.pause();
     document.getElementById('player').classList.remove('show');
+    if(window.location.hash.startsWith('#video=')) {
+        history.pushState("", document.title, window.location.pathname);
+    }
     loadFirebaseVideos();
 };
 
