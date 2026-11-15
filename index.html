@@ -34,15 +34,17 @@ h2{font-size:22px;margin:0 0 4px}
 .info{display:flex;gap:10px;padding-top:10px}
 .avatar{width:33px;height:33px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--cyan));font-weight:700;flex:none}
 .info h3{font-size:15px;line-height:1.4;margin:0 0 4px}
+.meta-row{display:flex;align-items:center;gap:10px;margin-top:2px;font-size:13px;color:var(--muted)}
+.list-like-btn { background: none; border: 0; color: #f43f5e; cursor: pointer; padding: 0; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; font-family: inherit; }
+.list-like-btn:hover { opacity: 0.8; }
 .empty{display:none;padding:35px;text-align:center;border:1px dashed var(--line);border-radius:15px;color:var(--muted);grid-column:1/-1;font-size:16px}
 footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var(--muted);font-size:15px;text-align:center}
 .modal{display:none;position:fixed;inset:0;z-index:10;background:#02040beF;padding:18px;place-items:center;overflow-y:auto}
 .modal.show{display:grid}
-.dialog{max-width:510px;width:100%;background:#121a2a;border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 25px 80px #0009;text-align:center}
-.dialog h2{font-size:20px;margin-bottom:10px;text-align:left}
-.dialog p{text-align:left;color:#bac5d7;font-size:14px;margin-bottom:20px}
+.dialog{max-width:510px;width:100%;background:#121a2a;border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 25px 80px #0009;text-align:left}
+.dialog h2{font-size:20px;margin-bottom:10px}
 .ad-btn { display: block; width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 700; border: 0; border-radius: 12px; cursor: pointer; font-size: 16px; text-decoration: none; text-align: center; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
-.video-desc { background: #080b14; padding: 12px; border-radius: 10px; margin-top: 12px; font-size: 14px; color: #cbd5e1; word-break: break-all; white-space: pre-wrap; border: 1px solid var(--line); text-align: left; }
+.video-desc { background: #080b14; padding: 12px; border-radius: 10px; margin-top: 12px; font-size: 14px; color: #cbd5e1; word-break: break-all; white-space: pre-wrap; }
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.wrap{padding:0 15px}.nav{height:64px;gap:10px}.brand{font-size:19px}.grid{gap:16px 12px}.info h3{font-size:14px}}
 </style>
@@ -67,11 +69,11 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
     <div class="wrap">ভাইরাল ভিডিও দেখতে আমাদের সাথেই থাকুন ধন্যবাদ</div>
 </footer>
 
-<!-- অ্যাড গেট মোডাল (শর্ট করা স্মার্ট লিংক সহ) -->
+<!-- অ্যাড গেট মোডাল -->
 <div class="modal" id="gate" role="dialog" aria-modal="true">
-<div class="dialog">
+<div class="dialog" style="text-align:center;">
 <h2>ভিডিও দেখতে ক্লিক করুন</h2>
-<p>ভিডিওটি আনলক করতে নিচের বাটনে ক্লিক করে স্পন্সর বিজ্ঞাপন পেজটি একবার ভিজিট করুন।</p>
+<p style="text-align:left; color:#bac5d7; font-size:14px; margin-bottom:20px;">ভিডিওটি আনলক করতে নিচের বাটনে ক্লিক করে স্পন্সর বিজ্ঞাপন পেজটি একবার ভিজিট করুন।</p>
 <a href="https://tinyurl.com/ewyefaw8" id="smartLinkBtn" class="ad-btn" target="_blank">▶ ভিডিও দেখতে ক্লিক করুন</a>
 <div style="margin-top:15px;text-align:right;"><button onclick="closeGate()" style="background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:14px;">বাতিল করুন</button></div>
 </div>
@@ -79,7 +81,7 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
 
 <!-- ভিডিও প্লেয়ার মোডাল -->
 <div class="modal" id="player" role="dialog" aria-modal="true">
-<div class="dialog" style="text-align:left;">
+<div class="dialog">
 <h2 id="playerTitle">ভিডিও প্লেয়ার</h2>
 <video id="videoEl" controls playsinline style="width:100%;max-height:45vh;background:#000;border-radius:12px;display:none"></video>
 <div class="video-desc" id="playerDesc"></div>
@@ -95,7 +97,7 @@ if(window.location.hash === '#admin') {
     document.getElementById('adminBtn').style.display = 'inline-flex';
 }
 
-let selected = null;
+let selectedKey = null, selectedData = null;
 const gate = document.getElementById('gate');
 const smartLinkBtn = document.getElementById('smartLinkBtn');
 
@@ -116,13 +118,13 @@ async function loadFirebaseVideos() {
         
         emptyDiv.style.display = 'none';
         
-        Object.keys(data).reverse().forEach(key => {
+        let keys = Object.keys(data).reverse();
+        keys.forEach(key => {
             let v = data[key];
+            let views = v.views || 0;
+            let likes = v.likes || 0;
             let article = document.createElement('article');
             article.className = 'video';
-            article.dataset.title = v.title;
-            article.dataset.src = v.videoUrl;
-            article.dataset.desc = v.desc || '';
             
             article.innerHTML = `
                 <div class="thumb">
@@ -130,17 +132,29 @@ async function loadFirebaseVideos() {
                 </div>
                 <div class="info">
                     <div class="avatar">P</div>
-                    <div>
+                    <div style="flex:1;min-width:0;">
                         <h3>${v.title}</h3>
-                        <div class="muted">PlayNest • লাইভ</div>
+                        <div class="meta-row">
+                            <span>👁️ ${views} views</span>
+                            <span>•</span>
+                            <button class="list-like-btn" onclick="handleLike(event, '${key}')">❤️ <span id="like-count-${key}">${likes}</span></button>
+                        </div>
                     </div>
                 </div>
             `;
             
-            article.addEventListener('click', () => {
-                selected = article;
+            // থাম্বনেইল বা টাইটেলে ক্লিক করলে অ্যাড গেট ওপেন হবে
+            article.querySelector('.thumb').addEventListener('click', () => {
+                selectedKey = key;
+                selectedData = v;
                 gate.classList.add('show');
             });
+            article.querySelector('h3').addEventListener('click', () => {
+                selectedKey = key;
+                selectedData = v;
+                gate.classList.add('show');
+            });
+
             grid.appendChild(article);
         });
     } catch (e) {
@@ -149,11 +163,37 @@ async function loadFirebaseVideos() {
     }
 }
 
-// যখন ভিজিটর শর্ট করা স্মার্ট লিংক বাটনে ক্লিক করবে
-smartLinkBtn.onclick = () => {
+// সরাসরি বাইরে থেকে লাইক বাড়ানোর ফাংশন
+window.handleLike = async function(event, key) {
+    event.stopPropagation(); // যাতে ভিডিও ওপেন না হয়ে যায়
+    const countSpan = document.getElementById(`like-count-${key}`);
+    let currentLikes = parseInt(countSpan.textContent) || 0;
+    currentLikes++;
+    countSpan.textContent = currentLikes;
+
+    try {
+        await fetch(`${DB_URL}/videos/${key}/likes.json`, {
+            method: 'PUT',
+            body: JSON.stringify(currentLikes)
+        });
+    } catch(e) {}
+};
+
+smartLinkBtn.onclick = async () => {
     gate.classList.remove('show'); 
-    if (selected) {
-        openPlayer(selected); 
+    if (selectedKey && selectedData) {
+        let currentViews = selectedData.views || 0;
+        let newViews = currentViews + 1;
+        
+        try {
+            await fetch(`${DB_URL}/videos/${selectedKey}/views.json`, {
+                method: 'PUT',
+                body: JSON.stringify(newViews)
+            });
+            selectedData.views = newViews;
+        } catch(err) {}
+
+        openPlayer(selectedData); 
     }
 };
 
@@ -161,25 +201,28 @@ function closeGate() {
     gate.classList.remove('show');
 }
 
-function openPlayer(card) {
-    document.getElementById('playerTitle').textContent = card.dataset.title;
-    document.getElementById('playerDesc').textContent = card.dataset.desc || 'কোনো ডেসক্রিপশন নেই';
-    const v = document.getElementById('videoEl');
-    if (card.dataset.src) {
-        v.src = card.dataset.src;
-        v.style.display = 'block';
-        v.play().catch(()=>{})
+function openPlayer(v) {
+    document.getElementById('playerTitle').textContent = v.title;
+    document.getElementById('playerDesc').textContent = v.desc || 'কোনো ডেসক্রিপশন নেই';
+    
+    const videoEl = document.getElementById('videoEl');
+    if (v.videoUrl) {
+        videoEl.src = v.videoUrl;
+        videoEl.style.display = 'block';
+        videoEl.play().catch(()=>{})
     } else {
-        v.removeAttribute('src');
-        v.style.display = 'none';
+        videoEl.removeAttribute('src');
+        videoEl.style.display = 'none';
     }
+
     document.getElementById('player').classList.add('show');
 }
 
 document.getElementById('closePlayer').onclick = () => {
-    const v = document.getElementById('videoEl');
-    v.pause();
+    const videoEl = document.getElementById('videoEl');
+    videoEl.pause();
     document.getElementById('player').classList.remove('show');
+    loadFirebaseVideos();
 };
 
 loadFirebaseVideos();
