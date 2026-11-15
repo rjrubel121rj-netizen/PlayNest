@@ -9,7 +9,7 @@
 :root{--bg:#090d18;--panel:#121a2a;--muted:#9ba8bd;--line:#ffffff18;--purple:#875cf6;--cyan:#22d3ee}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:#f7f8fc;font-family:'Hind Siliguri',sans-serif;padding:20px}
-.wrap{max-width:600px;margin:auto}
+.wrap{max-width:650px;margin:auto}
 .box{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 10px 30px #0009}
 h2{margin-top:0;font-size:24px;color:#fff}
 .form-group{margin-bottom:18px}
@@ -29,30 +29,30 @@ button:hover{opacity:0.9}
 <body>
 <div class="wrap">
 <div class="box">
-<h2>ভিডিও ম্যানেজমেন্ট</h2>
-<p style="color:var(--muted);font-size:13px;margin-bottom:20px;">যেকোনো ধরনের থাম্বনেইল ছবি এবং যেকোনো ফরম্যাটের ভিডিও আপলোড করুন।</p>
+<h2>একাধিক ভিডিও আপলোড প্যানেল</h2>
+<p style="color:var(--muted);font-size:13px;margin-bottom:20px;">একসাথে একাধিক ভিডিও এবং থাম্বনেইল সিলেক্ট করে আপলোড করতে পারেন (যেকোনো সাইজ বা দীর্ঘ সময় দীর্ঘ ভিডিও)।</p>
 
 <div class="form-group">
-<label>ভিডিওর শিরোনাম</label>
-<input type="text" id="title" placeholder="ভিডিওর নাম লিখুন...">
+<label>ভিডিওর সাধারণ শিরোনাম বা ব্যাচ নাম</label>
+<input type="text" id="title" placeholder="যেমন: নতুন ভাইরাল ভিডিও পর্ব...">
 </div>
 
 <div class="form-group">
-<label>থাম্বনেইল ছবি সিলেক্ট করুন</label>
-<input type="file" id="thumbFile" accept="image/*">
+<label>থাম্বনেইল ছবি সিলেক্ট করুন (একাধিক বা একটি)</label>
+<input type="file" id="thumbFile" accept="image/*" multiple>
 </div>
 
 <div class="form-group">
-<label>ভিডিও ফাইল সিলেক্ট করুন (যেকোনো ফরম্যাট: MP4, HD ইত্যাদি)</label>
-<input type="file" id="videoFile" accept="video/*">
+<label>ভিডিও ফাইলসমূহ সিলেক্ট করুন (একাধিক একসাথে সিলেক্ট করতে পারবেন)</label>
+<input type="file" id="videoFiles" accept="video/*" multiple>
 </div>
 
 <div class="form-group">
-<label>ভিডিও ডেসক্রিপশন (যেকোনো লিংক বা লেখা দিন)</label>
-<textarea id="desc" placeholder="এখানে ডেসক্রিপশন বা প্রয়োজনীয় লিংক দিন..."></textarea>
+<label>ভিডিও ডেসক্রিপশন</label>
+<textarea id="desc" placeholder="এখানে ডেসক্রিপশন দিন..."></textarea>
 </div>
 
-<button id="uploadBtn">ভিডিও পাবলিশ করুন</button>
+<button id="uploadBtn">সব ভিডিও একসাথে পাবলিশ করুন</button>
 </div>
 
 <div class="video-list">
@@ -74,43 +74,50 @@ function convertToBase64(file) {
 }
 
 document.getElementById('uploadBtn').onclick = async () => {
-    const title = document.getElementById('title').value.trim();
-    const thumbInput = document.getElementById('thumbFile').files[0];
-    const videoInput = document.getElementById('videoFile').files[0];
+    const titleInput = document.getElementById('title').value.trim();
+    const thumbFiles = document.getElementById('thumbFile').files;
+    const videoFiles = document.getElementById('videoFiles').files;
     const desc = document.getElementById('desc').value.trim();
 
-    if(!title || !thumbInput || !videoInput) {
-        alert('দয়া করে শিরোনাম, থাম্বনেইল ছবি এবং ভিডিও ফাইল দিন!');
+    if(!videoFiles.length) {
+        alert('দয়া করে অন্তত একটি ভিডিও ফাইল সিলেক্ট করুন!');
         return;
     }
 
-    document.getElementById('uploadBtn').textContent = "আপলোড হচ্ছে, দয়া করে অপেক্ষা করুন...";
+    document.getElementById('uploadBtn').textContent = "ভিডিও প্রসেস ও আপলোড হচ্ছে, দয়া করে অপেক্ষা করুন...";
 
     try {
-        const thumbBase64 = await convertToBase64(thumbInput);
-        const videoBase64 = await convertToBase64(videoInput);
+        // একাধিক ভিডিও লুপ চালিয়ে একে একে আপলোড করার প্রসেস
+        for (let i = 0; i < videoFiles.length; i++) {
+            let vFile = videoFiles[i];
+            let tFile = thumbFiles[i] || thumbFiles[0]; // থাম্বনেইল না থাকলে প্রথমটি বা ডিফল্ট ধরবে
+            
+            let videoBase64 = await convertToBase64(vFile);
+            let thumbBase64 = tFile ? await convertToBase64(tFile) : '';
 
-        const videoData = {
-            title: title,
-            thumb: thumbBase64,
-            videoUrl: videoBase64,
-            desc: desc
-        };
+            let videoTitle = videoFiles.length > 1 ? `${titleInput || 'ভিডিও'} (${i + 1})` : (titleInput || vFile.name);
 
-        let res = await fetch(`${DB_URL}/videos.json`, {
-            method: 'POST',
-            body: JSON.stringify(videoData)
-        });
+            let videoData = {
+                title: videoTitle,
+                thumb: thumbBase64,
+                videoUrl: videoBase64,
+                desc: desc,
+                views: 0,
+                likes: 0
+            };
 
-        if(res.ok) {
-            alert('ভিডিও সফলভাবে পাবলিশ হয়েছে!');
-            location.reload();
-        } else {
-            alert('আপলোড করতে সমস্যা হয়েছে।');
+            await fetch(`${DB_URL}/videos.json`, {
+                method: 'POST',
+                body: JSON.stringify(videoData)
+            });
         }
+
+        alert('সব ভিডিও সফলভাবে পাবলিশ হয়েছে!');
+        location.reload();
+
     } catch(err) {
-        alert('ভিডিও ফাইলের সাইজ খুব বড় হলে ফায়ারবেজে আপলোড সমস্যা হতে পারে। ছোট সাইজ বা কম্প্রেস করা ভিডিও দিন।');
-        document.getElementById('uploadBtn').textContent = "ভিডিও পাবলিশ করুন";
+        alert('ভিডিওর সাইজ খুব বড় হওয়ার কারণে ব্রাউজার বা ফায়ারবেজে সমস্যা হতে পারে। ছোট সাইজের ফাইল দিন অথবা ভিডিওর সংখ্যা কমিয়ে আপলোড করুন।');
+        document.getElementById('uploadBtn').textContent = "সব ভিডিও একসাথে পাবলিশ করুন";
     }
 };
 
@@ -130,7 +137,7 @@ async function loadAdminVideos() {
                 <div class="vid-item">
                     <div class="vid-info">
                         <h4>${v.title}</h4>
-                        <p>${v.desc ? v.desc.substring(0, 40) + '...' : 'কোনো ডেসক্রিপশন নেই'}</p>
+                        <p>ভিউ: ${v.views || 0} | লাইক: ${v.likes || 0}</p>
                     </div>
                     <button class="del-btn" onclick="deleteVideo('${key}')">ডিলিট</button>
                 </div>
