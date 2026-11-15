@@ -45,6 +45,7 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
 .modal.show{display:grid}
 .dialog{max-width:510px;width:100%;background:#121a2a;border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 25px 80px #0009;text-align:left}
 .dialog h2{font-size:20px;margin-bottom:10px}
+.gate-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--line); }
 .ad-btn { display: block; width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 700; border: 0; border-radius: 12px; cursor: pointer; font-size: 16px; text-decoration: none; text-align: center; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
 .video-desc { background: #080b14; padding: 12px; border-radius: 10px; margin-top: 12px; font-size: 14px; color: #cbd5e1; word-break: break-all; white-space: pre-wrap; }
 @media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -72,10 +73,11 @@ footer{border-top:1px solid var(--line);margin-top:24px;padding:25px 0;color:var
     <div class="wrap">ভাইরাল ভিডিও দেখতে আমাদের সাথেই থাকুন ধন্যবাদ</div>
 </footer>
 
-<!-- অ্যাড গেট মোডাল -->
+<!-- অ্যাড গেট মোডাল (যার উপরে থাম্বনেইল ও ভিডিও দেখার বাটন থাকবে) -->
 <div class="modal" id="gate" role="dialog" aria-modal="true">
 <div class="dialog" style="text-align:center;">
-<h2>ভিডিও দেখতে ক্লিক করুন</h2>
+<h2 id="gateTitle">ভিডিও দেখতে ক্লিক করুন</h2>
+<img id="gateThumb" class="gate-thumb" src="" alt="Thumbnail">
 <p style="text-align:left; color:#bac5d7; font-size:14px; margin-bottom:20px;">ভিডিওটি আনলক করতে নিচের বাটনে ক্লিক করে স্পন্সর বিজ্ঞাপন পেজটি একবার ভিজিট করুন।</p>
 <a href="https://tinyurl.com/ewyefaw8" id="smartLinkBtn" class="ad-btn" target="_blank">▶ ভিডিও দেখতে ক্লিক করুন</a>
 <div style="margin-top:15px;text-align:right;"><button onclick="closeGate()" style="background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:14px;">বাতিল করুন</button></div>
@@ -101,6 +103,7 @@ if(window.location.hash === '#admin') {
 }
 
 let selectedKey = null, selectedData = null;
+let allVideosData = {}; // সমস্ত ভিডিওর ডেটা ক্যাশ করে রাখার জন্য
 const gate = document.getElementById('gate');
 const smartLinkBtn = document.getElementById('smartLinkBtn');
 
@@ -118,14 +121,15 @@ async function loadFirebaseVideos() {
             return;
         }
         
-        const siteBaseUrl = window.location.href.split('#')[0];
+        allVideosData = data; // ডেটা সেভ করে রাখলাম
+        const siteBaseUrl = window.location.href.split('#')[0].split('?')[0];
 
         let keys = Object.keys(data).reverse();
         keys.forEach(key => {
             let v = data[key];
             let views = v.views || 0;
             let likes = v.likes || 0;
-            let videoShareLink = `${siteBaseUrl}#video=${key}`;
+            let videoShareLink = `${siteBaseUrl}#v=${key}`;
 
             let article = document.createElement('article');
             article.className = 'video';
@@ -149,34 +153,38 @@ async function loadFirebaseVideos() {
                 </div>
             `;
             
+            // থাম্বনেইল বা টাইটেলে ক্লিক করলে গেট ওপেন হবে
             article.querySelector('.thumb').addEventListener('click', () => {
-                selectedKey = key;
-                selectedData = v;
-                gate.classList.add('show');
+                openGate(key, v);
             });
             article.querySelector('h3').addEventListener('click', () => {
-                selectedKey = key;
-                selectedData = v;
-                gate.classList.add('show');
+                openGate(key, v);
             });
 
             grid.appendChild(article);
         });
 
-        checkUrlHash(data);
+        // যদি সরাসরি শেয়ার লিংকে ঢোকা হয় (#v=KEY)
+        checkUrlHash();
 
     } catch (e) {
         grid.innerHTML = `<div class="empty" id="empty">ভিডিও লোড করতে সমস্যা হয়েছে।</div>`;
     }
 }
 
-function checkUrlHash(data) {
-    if(window.location.hash.startsWith('#video=')) {
-        let targetKey = window.location.hash.replace('#video=', '');
-        if(data[targetKey]) {
-            selectedKey = targetKey;
-            selectedData = data[targetKey];
-            gate.classList.add('show');
+function openGate(key, v) {
+    selectedKey = key;
+    selectedData = v;
+    document.getElementById('gateTitle').textContent = v.title;
+    document.getElementById('gateThumb').src = v.thumb;
+    gate.classList.add('show');
+}
+
+function checkUrlHash() {
+    if(window.location.hash.startsWith('#v=')) {
+        let targetKey = window.location.hash.replace('#v=', '');
+        if(allVideosData[targetKey]) {
+            openGate(targetKey, allVideosData[targetKey]);
         }
     }
 }
@@ -196,7 +204,6 @@ window.handleLike = async function(event, key) {
     } catch(e) {}
 };
 
-// শেয়ার বাটন ক্লিক করলে লিংক কপি হবে
 window.shareVideo = function(event, link, btn) {
     event.stopPropagation();
     navigator.clipboard.writeText(link).then(() => {
@@ -230,7 +237,7 @@ smartLinkBtn.onclick = async () => {
 
 function closeGate() {
     gate.classList.remove('show');
-    if(window.location.hash.startsWith('#video=')) {
+    if(window.location.hash.startsWith('#v=')) {
         history.pushState("", document.title, window.location.pathname);
     }
 }
@@ -241,6 +248,7 @@ function openPlayer(v) {
     
     const videoEl = document.getElementById('videoEl');
     if (v.videoUrl) {
+        v.videoUrl = v.videoUrl.replace(/^['"]|['"]$/g, '').trim();
         videoEl.src = v.videoUrl;
         videoEl.style.display = 'block';
         videoEl.play().catch(()=>{})
@@ -256,7 +264,7 @@ document.getElementById('closePlayer').onclick = () => {
     const videoEl = document.getElementById('videoEl');
     videoEl.pause();
     document.getElementById('player').classList.remove('show');
-    if(window.location.hash.startsWith('#video=')) {
+    if(window.location.hash.startsWith('#v=')) {
         history.pushState("", document.title, window.location.pathname);
     }
     loadFirebaseVideos();
